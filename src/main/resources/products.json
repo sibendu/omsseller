@@ -1,0 +1,29 @@
+[
+	{"id":10,"name":"Rice","parent":0,"subcategories":[
+		{"id":110, "name":"Foreign Rice","parent":10,"items":[
+{"id": 1101,"parent":110,"code":"abc1101","name":"Basmati 1","description":"Basmati Rice","price":"110.50","unit":"kg","min":"1","max":"5","step":"0.5","defaultValue":"2"},
+{"id": 1102,"parent":110,"code":"abc1102","name":"Deradun 1","description":"Deradun Rice","price":"70","unit":"kg","min":"1","max":"10","step":"1","defaultValue":"5"}
+		]},
+		{"id":120,"name":"Local Rice","parent":10,"items":[
+{"id": 1201,"parent":120,"code":"abc1201","name":"Basmati 2","description":"Basmati Rice","price":"110.50","unit":"kg","min":"1","max":"5","step":"0.5","defaultValue":"2"},
+{"id": 1202,"parent":120,"code":"abc1202","name":"Deradun 2","description":"Deradun Rice","price":"70","unit":"kg","min":"1","max":"10","step":"1","defaultValue":"5"}
+		]}
+	]},
+
+	{"id":20,"name":"Liquor","parent":0,"subcategories":[
+		{"id":210,"name":"Local","parent":20,"items":[
+{"id": 2101,"parent":210,"code":"abc2001","name":"Xyz","description":"Basmati Rice","price":"110.50","unit":"kg","min":"1","max":"5","step":"0.5","defaultValue":"2"},
+{"id": 2102,"parent":210,"code":"abc2002","name":"Feni","description":"Deradun Rice","price":"70","unit":"kg","min":"1","max":"10","step":"1","defaultValue":"5"}
+		]},
+		{"id":220,"name":"Foreign","parent":20,"items":[
+{"id": 2201,"parent":220,"code":"abc2201","name":"Chivan","description":"Basmati Rice","price":"110.50","unit":"kg","min":"1","max":"5","step":"0.5","defaultValue":"2"},
+{"id": 2202,"parent":220,"code":"abc2202","name":"Black Label","description":"Deradun Rice","price":"70","unit":"kg","min":"1","max":"10","step":"1","defaultValue":"5"}
+		]}
+	]},
+
+	{"id":30,"name":"Oil","parent":0,"items":[
+{"id": 301,"parent":30,"code":"abc301","name":"Coconut","description":"Basmati Rice","price":"110.50","unit":"kg","min":"1","max":"5","step":"0.5","defaultValue":"2"},
+{"id": 302,"parent":30,"code":"abc302","name":"Mustard","description":"Deradun Rice","price":"70","unit":"kg","min":"1","max":"10","step":"1","defaultValue":"5"}
+	]}
+]
+   

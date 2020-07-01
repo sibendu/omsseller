@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>OMS</title>
+  
+  <!-- SCRIPTS -->
+  <!-- JQuery -->
+  <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="/js/popper.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="/js/mdb.min.js"></script>
+  
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/mdb.min.css" rel="stylesheet">
+  <link href="/css/style.min.css" rel="stylesheet">
+   
+  <script src="js/cart.js"></script> 	
+
+</head>
+
+<body>
+
+
+<!-- Navbar -->
+  <nav class="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar">
+    <div class="container">
+
+      <!-- Brand -->
+      <a class="navbar-brand waves-effect" href="#" >
+        <strong class="blue-text">OMS</strong>
+      </a>
+
+      <!-- Collapse -->
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Links -->
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+        <!-- Left -->
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link waves-effect" href="/home">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link waves-effect" href="/product" >My Products</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link waves-effect" href="/order" >Create Order</a>
+          </li>
+	  	  <li class="nav-item">
+            <a class="nav-link waves-effect" href="/cart">
+              <span class="badge red z-depth-1 mr-1"> . </span>
+              <i class="fas fa-shopping-cart"></i>
+              <span class="clearfix d-none d-sm-inline-block">Cart</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link waves-effect" href="/customer" >Customer</a>
+          </li>	
+        </ul>
+
+        <!-- Right -->
+        <ul class="navbar-nav nav-flex-icons">
+          <li class="nav-item">
+            <a class="nav-link waves-effect" href="/seller" >My Profile</a>
+          </li> 
+          <li class="nav-item">
+            <a href="/seller" class="nav-link waves-effect" >
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+	  	  <li class="nav-item">
+            <a class="nav-link waves-effect" href="/logout" >Logout</a>
+          </li> 	
+        </ul>
+
+      </div>
+
+    </div>
+  </nav>
+  <!-- Navbar -->
+  
+  <!--Main layout-->
+  <main>
+
+<div class="container-fluid wow fadeIn">
+
+	<br/><br/><br/>
+
+	<h4><p th:text="${message}"/></h4>
+
+<div th:switch="${orders}">
+		<h5 th:case="null">No orders yet.</h5>
+		<div th:case="*">
+			<h4>Orders: New & Processing</h4>
+			<table border=1>
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>Date</th>
+						<th>Total Price (INR)</th>
+						<th>Status</th>
+						<th>Remarks</th>
+						<th>View</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="order : ${orders}">
+						<td th:text="${order.id}"></td>
+						<td th:text="${#dates.format(order.created, 'dd-MMM-yyyy')}"></td>
+						<td th:text="${order.totalPrice}"></td>
+						
+						<td th:if="${order.status == 'New'}"><span class="badge red mr-1"><p th:text="${order.status}"/></span></td>
+						<td th:unless="${order.status == 'New'}"><span class="badge purple mr-1"><p th:text="${order.status}"/></span></td>
+
+						<td th:text="${order.remarks}"></td>
+						<td><a th:href="@{/order/view/{id}(id=${order.id})}"><span class="badge blue mr-1"><font size=2>View Details</font></span></a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+</div>
+
+<div th:switch="${otherOrders}">
+		<h5 th:case="null">No orders yet.</h5>
+		<div th:case="*">
+			<br/><h4>Other Orders (Completed, Paid, Cancelled)</h4>
+			<table border=1>
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>Date</th>
+						<th>Total Price (INR)</th>
+						<th>Status</th>
+						<th>Remarks</th>
+						<th>View</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="order : ${otherOrders}">
+						<td th:text="${order.id}"></td>
+						<td th:text="${#dates.format(order.created, 'dd-MMM-yyyy')}"></td>
+						<td th:text="${order.totalPrice}"></td>
+						
+						<td th:if="${order.status == 'Completed'}"><span class="badge green mr-1"><p th:text="${order.status}"/></span></td>
+						<td th:unless="${order.status == 'Completed'}"><span class="badge yellow mr-1"><p th:text="${order.status}"/></span></td>
+						
+						<td th:text="${order.remarks}"></td>
+						<td><a th:href="@{/order/view/{id}(id=${order.id})}"><span class="badge blue mr-1"><font size=2>View Details</font></span></a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+</div>
+
+
+
+	
+
+</div>
+    
+</main>  
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+	var clearCart = /*[[${clearCart}]]*/ false;
+	
+	if(clearCart){
+		//alert('Cart to being cleared');
+		cartitems = [];
+		saveCart();
+		
+		cartitems = getCart();
+		//alert('Items in cart: '+cartitems.length);
+	}
+	
+/*]]>*/
+</script>
+
+</body>
+</html>

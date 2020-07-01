@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>OMS</title>
+  
+  <!-- SCRIPTS -->
+  <!-- JQuery -->
+  <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="/js/popper.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="/js/mdb.min.js"></script>
+  
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/mdb.min.css" rel="stylesheet">
+  <link href="/css/style.min.css" rel="stylesheet">
+  
+<script th:inline="javascript">
+/*<![CDATA[*/
+	var productjson = /*[[${session.products}]]*/ 'Product data not loaded';
+	
+/*]]>*/
+</script>
+  
+  <script src="js/tree.js"></script>
+  <script src="js/cart.js"></script> 	
+
+</head>
+
+<body>
+
+
+<!-- Navbar -->
+  <nav class="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar">
+    <div class="container">
+
+      <!-- Brand -->
+      <a class="navbar-brand waves-effect" href="#" >
+        <strong class="blue-text">OMS</strong>
+      </a>
+
+      <!-- Collapse -->
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Links -->
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+        <!-- Left -->
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link waves-effect" href="/home">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link waves-effect" href="/product" >My Products</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link waves-effect" href="/order" >Create Order</a>
+          </li>
+	  	  <li class="nav-item active">
+            <a class="nav-link waves-effect" href="/cart">
+              <span class="badge red z-depth-1 mr-1"> . </span>
+              <i class="fas fa-shopping-cart"></i>
+              <span class="clearfix d-none d-sm-inline-block">Cart</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link waves-effect" href="/customer" >Customer</a>
+          </li>	
+        </ul>
+        </ul>
+
+        <!-- Right -->
+        <ul class="navbar-nav nav-flex-icons">
+          <li class="nav-item">
+            <a class="nav-link waves-effect" href="/seller" >Seller</a>
+          </li> 
+          <li class="nav-item">
+            <a href="/seller" class="nav-link waves-effect" >
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+	  	  <li class="nav-item">
+            <a class="nav-link waves-effect" href="/logout" >Logout</a>
+          </li> 	
+        </ul>
+
+      </div>
+
+    </div>
+  </nav>
+  <!-- Navbar -->
+  
+  <!--Main layout-->
+  <main>
+
+<div class="container-fluid wow fadeIn">
+
+	  <!-- Heading -->
+      <h4 class="my-5 h2 text-center">.</h4>
+      
+      
+      <!--Grid row-->
+      <div class="row">
+        <!--Grid column-->
+        <div class="col-md-8 mb-4">
+          <!-- Promo code -->
+          <form class="card p-2" name="orderForm" id="orderForm" method="post" action="/order">
+            <div class="input-group">
+            	<!-- 
+            	<select  class="form-control" required="required" name="cust" id="cust">
+			      <option disabled="disabled" selected="selected" > -- sd -- </option>
+			      <option th:each="cust : ${mycustomers}" th:value="${cust.id}" th:text="${cust.name}" ></option>
+			    </select>
+			     -->
+            		
+            	<div class="dropdown">
+				  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				    Select customer
+				  </button>
+				  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				    <a th:each="cust : ${mycustomers}" class="dropdown-item" th:mydata1="${cust.id}" th:mydata2="${cust.name}" onclick="customerSelection(this.getAttribute('mydata1'),this.getAttribute('mydata2'));"><p th:text="${cust.name}"/></a>
+				  </div>
+				</div>
+				
+				<input id="order" name="order" type="hidden" value=""/>	
+				<input id="customer" name="customer" type="hidden" value=""/>	
+				<input id="customerName" name="customerName" type="text" class="form-control" value="" disabled/>
+              	<input id="sellerInstruction" type="text" class="form-control" placeholder="instruction for seller" value=""/>
+            	
+            </div>
+          </form>
+        </div>
+        <!--Grid column-->
+      </div>
+      <!--Grid row-->
+      
+      <!--Grid row-->
+      <div class="row">
+
+        <!--Grid column-->
+        <div class="col-md-12 mb-4" id="cartPanel">
+          	<!-- Cart generated HTML appended here -->
+        </div>
+        <!--Grid column-->
+      </div>
+      
+	 <!--Grid row-->
+     <div class="row">
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+			<button id="btnPlaceOrder" class="btn btn-primary btn-lg btn-block" type="button" onClick="submitCart()">Place Order</button>
+		</div>
+        <div class="col-md-6 mb-4">
+			<button id="btnClearCart" class="btn btn-primary btn-lg btn-block" type="button" onClick="clearCart()">Clear Cart</button>
+		</div>
+      </div>			
+	  <!--Grid row-->
+	  	
+ </div>
+    
+</main>  
+
+<script>
+  	
+	//console.log(tree);
+
+	cartitems = getCart();
+	
+	//alert(cartitems.length + ' :::Items in cart');
+	
+	if(cartitems != null && cartitems.length > 0){
+		
+		var html = '<ul class="list-group mb-3 z-depth-1">';
+		
+		for (index = 0; index < cartitems.length; index++) {
+				
+			var item = cartitems[index];		
+			
+			
+			
+			//console.log(item);
+			
+			var params =  item.id + ',' + '\''+ item.code + '\',' + '\''+ item.name + '\',' ;
+	      	params += '\''+ item.description + '\',' + item.price + ',' + '\''+ item.unit + '\',' ;
+	      	params += '\''+ item.code + '-qty\'';
+	      	
+	      	//alert(params);
+		
+			html += '<li class="list-group-item d-flex justify-content-between lh-condensed">';
+			html += '<div>';
+			html += '<h6 class="my-0">'+item.name+'</h6>';
+			html += '<small class="text-muted">('+item.price+' per '+item.unit+') </small>';
+			html += '<small class="text-muted"> '+item.description+'</small>';
+			html += '</div>';
+			
+			html += '<div>';	
+			
+			thisProductNode = searchNode(item.id);
+			//alert('searching for : '+item.id+'  in tree = '+tree);
+			//console.log(thisProductNode);
+			//console.log(thisProductNode.data);
+			
+			html += '<input name="'+item.code+'-qty" type="number" value="'+item.quantity+'" min="'+thisProductNode.data.min+'" max="'+thisProductNode.data.max+'" step="'+thisProductNode.data.step+'"/> '+item.unit; 
+			html += '</div>';
+			
+			html += '<div>';	
+			html += '<button id="btnAddToCart-'+item.code+'" class="btn btn-primary btn-md my-0 p" type="button" onClick="addItemToCart('+params+')">Update Cart</button>';	
+			html += '<button id="btnRemoveFromCart-'+item.code+'" class="btn btn-primary btn-md my-0 p" type="button" onClick="removeItemFromCart('+params+')">Remove</button>';
+			html += '</div>';
+			html += '</li>'; 
+	  
+		}
+	  	html += '</ul>';
+	
+	  	var thisCartPanel = $('#cartPanel');
+	  	thisCartPanel.append(html);
+	  	
+	}else{ // There are no items in the cart
+		html += '<h4>There are no items in the cart</h4>';
+		var thisCartPanel = $('#cartPanel');
+	  	thisCartPanel.append(html);
+	  	
+	  	$('#sellerInstruction').remove();
+ 		 $('#btnPlaceOrder').remove();
+ 		 $('#btnClearCart').remove();
+	}  	
+  	
+  	function clearCart(){
+  		//alert("Clearing cart, you can select from products page again.");
+  		cartitems = [];
+  		saveCart();
+
+  		//clear the table on screen
+  		 $('#sellerInstruction').remove();
+  		 $('#btnPlaceOrder').remove();
+  		 $('#btnClearCart').remove();
+  			
+  		$('#cartPanel').remove(); 
+  		
+  		html += '<h4>There are no items in the cart</h4>';
+		var thisCartPanel = $('#cartPanel');
+	  	thisCartPanel.append(html);
+  		
+  		alert('Cleared cart; items = '+cartitems.length);
+  	}
+
+
+ function submitCart(){
+	 var inst = document.orderForm.sellerInstruction.value;
+	 inst = 'Seller created: '+inst;
+	 //alert(inst);
+	 
+	 if(cartitems.length == 0){
+		 alert('Please enter at least one item for placing order.');
+	 }else if(document.orderForm.customer.value == null || document.orderForm.customer.value == '' || document.orderForm.customer.value == 0){
+		alert('Please select a customer.');	 
+	 }else{
+		 //alert(document.orderForm.customer.value);
+		 
+		 var order = {"customer": document.orderForm.customer.value, "instruction": inst, items:cartitems};
+		 //alert(order);
+		 document.orderForm.order.value = JSON.stringify(order);
+		 document.orderForm.submit();
+	 }
+	 return;
+ }
+ 
+ function customerSelection(id, name){
+	 //alert(id+' '+name);
+	 document.orderForm.customer.value = id;
+	 document.orderForm.customerName.value = name;
+ }
+	 
+</script>
+
+</body>
+</html>

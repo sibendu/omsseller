@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>OMS</title>
+  
+  <!-- SCRIPTS -->
+  <!-- JQuery -->
+  <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="/js/popper.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="/js/mdb.min.js"></script>
+  
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/mdb.min.css" rel="stylesheet">
+  <link href="/css/style.min.css" rel="stylesheet">
+  
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar">
+    <div class="container">
+
+      <!-- Brand -->
+      <a class="navbar-brand waves-effect" href="#" >
+        <strong class="blue-text">OMS</strong>
+      </a>
+
+      <!-- Collapse -->
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Links -->
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+        <!-- Left -->
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link waves-effect" href="/home">Home</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link waves-effect" href="/product">My Products</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link waves-effect" href="/order" >Create Order</a>
+          </li>
+	  	 <li class="nav-item">
+            <a class="nav-link waves-effect" href="/cart">
+              <span class="badge red z-depth-1 mr-1"> . </span>
+              <i class="fas fa-shopping-cart"></i>
+              <span class="clearfix d-none d-sm-inline-block"> Cart </span>
+            </a>
+          </li>	
+          <li class="nav-item">
+            <a class="nav-link waves-effect" href="/customer" >Customer</a>
+          </li>	
+        </ul>
+
+        <!-- Right -->
+        <ul class="navbar-nav nav-flex-icons">
+          <li class="nav-item">
+            <a class="nav-link waves-effect" href="/seller" >Seller</a>
+          </li> 
+          <li class="nav-item">
+            <a href="/seller" class="nav-link waves-effect" >
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+	  <li class="nav-item">
+            <a class="nav-link waves-effect" href="/logout" >Logout</a>
+          </li> 	
+        </ul>
+
+      </div>
+
+    </div>
+  </nav>
+  <!-- Navbar -->
+
+  <!--Main layout-->
+  <main>
+  	
+    <div class="container-fluid">
+	   
+		  <!--Navbar-->
+	      <nav class="navbar navbar-expand-lg navbar-dark mdb-color lighten-3 mt-3 mb-5">
+	      </nav>
+	      <!--/.Navbar-->
+		
+	    <table>
+	    	<tr>
+	    		<td align=right>Order No:</td>
+	    		<td><b><label th:text="${order.id}"></label></b></td>
+	    	</tr>
+	    	<tr>
+	    		<td align=right>Customer:</td>
+	    		<td><b><label th:text="${customer.id}+ '   '+ ${customer.name} +' ('+${customer.phone}+')'"></label></b></td>
+	    	</tr>
+	    	<tr>
+	    		<td align=right>Status:</td>
+	    		<td><b><label th:text="${order.status}"></label></b></td>
+	    	</tr>
+	    	<tr>
+	    		<td align=right valign=top>Total Price</td>
+	    		<td><b><label th:text="'Rs. '+ ${order.totalPrice}"></b></td>
+	    	</tr>
+	    	<tr>
+	    		<td align=right valign=top>Instruction (for seller)</td>
+	    		<td><label th:text="${order.instruction}"></td>
+	    	</tr>	
+	    </table>
+	    
+	    <div th:switch="${order.items}">
+		<h2 th:case="${#lists.isEmpty(order.items)}">No items in this Order</h2>
+		<div th:case="*">
+			<table border=1>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Description</th>
+						<th>Price / Unit</th>
+						<th>Quantity</th>
+						<th>Status</th>
+						<th>Remarks</th>
+						
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="item : ${order.items}">
+					    <td th:text="${item.name}"></td>
+						<td th:text="${item.description}"></td>
+						<td th:text="'Rs. ' + ${item.price} +' per ' + ${item.unit}"></td>
+						<td th:text="${item.quantity}"></td>
+						<td th:text="${item.status}"></td>
+						<td th:text="${item.instruction}"></td>
+						
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		</div>
+		
+		<div>
+			<form id="orderForm" name="orderForm" method="post" action="#" th:action="@{/processorder}" th:object="${order}" >	
+				<br/>
+				Seller Remarks: <input id="remarks" name="remarks" th:field="*{remarks}"  type="text" value="" placeholder="Enter your remarks"></td>
+				<br/>
+				<input type="hidden" id="id"  name="id" th:field="*{id}" value=""/>
+				<input type="hidden" id="status"  name="status" th:field="*{status}" value=""/>
+			 </form>   
+			<table>
+		    	<tr>
+			    		<td><button id="btnStart" class="btn btn-primary btn-lg btn-block" type="button" onClick="processOrder('Processing')">Accept</button></td>
+			    		<td><button id="btnComplete" class="btn btn-primary btn-lg btn-block" type="button" onClick="processOrder('Completed')">Complete</button></td>
+			    		<td><button id="btnPaid" class="btn btn-primary btn-lg btn-block" type="button" onClick="processOrder('Paid')">Paid</button></td>
+			    		<td><button id="btnCancel" class="btn btn-primary btn-lg btn-block" type="button" onClick="processOrder('Cancelled')">Cancel</button></td>	
+		    	</tr>
+		    </table>	
+			
+			
+		</div>
+					
+    </div>
+    
+    
+    
+  </main>
+  <!--Main layout-->
+
+  <!--Footer-->
+  <footer class="page-footer text-center font-small mt-4 wow fadeIn">
+    <!--Copyright-->
+    <div class="footer-copyright py-3">
+      © 2020 Copyright: S. Das
+    </div>
+    <!--/.Copyright-->
+  </footer>
+  <!--/.Footer-->
+ 
+<script>
+
+function processOrder(status){
+	document.orderForm.status.value = status; 
+	//alert(document.orderForm.status.value+'  '+document.orderForm.id.value);
+	document.orderForm.submit();
+}
+
+</script>
+
+</body>
+
+</html>
