@@ -46,10 +46,10 @@
 
         <!-- Left -->
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
+          <li class="nav-item">
             <a class="nav-link waves-effect" href="/home">Home</span></a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item active">
             <a class="nav-link waves-effect" href="/product">My Products</a>
           </li>
           <li class="nav-item">
@@ -100,83 +100,76 @@
 		
 		<h4><p th:text="${message}"/></h4>
 		
+	  <!--Grid row-->
+      <div class="row">
+        <!--Grid column-->
+        <div class="col-md-8 mb-4">
+         
+		<form id="itemForm" name="itemForm" method="post" action="#" th:action="@{/item/save}" th:object="${item}" >	
+				<br/>
+				<table>
+					<tr>
+						<td>Item Id</td>
+						<td><b><p th:text="*{id}"/></b> </td>
+					</tr>
+					<tr>
+						<td>Name</td>
+						<td> <input type="text" th:field="*{name}" value=""/></td>
+						<td th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</td>
+					</tr>
+					<tr>
+						<td>Description</td>
+						<td> <input type="text" th:field="*{description}" value=""/></td>
+						<td th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Description Error</td>
+					</tr>
+					<tr>
+						<td>Price (per unit)</td>
+						<td> <input type="text" th:field="*{price}" value=""/></td>
+						<td th:if="${#fields.hasErrors('price')}" th:errors="*{price}">Price (per unit) Error</td>
+					</tr>
+					<tr>
+						<td>Unit</td>
+						<td> <input type="text" th:field="*{unit}" value=""/></td>
+						<td th:if="${#fields.hasErrors('unit')}" th:errors="*{unit}">Unit Error</td>
+					</tr>
+					<tr>
+						<td>Minimum Quantity</td>
+						<td> <input type="text" th:field="*{min}" value=""/></td>
+						<td th:if="${#fields.hasErrors('min')}" th:errors="*{min}">Minimum Quantity Error</td>
+					</tr>
+					<tr>
+						<td>Maximum Quantity</td>
+						<td> <input type="text" th:field="*{max}" value=""/></td>
+						<td th:if="${#fields.hasErrors('max')}" th:errors="*{max}">Maximum Quantity Error</td>
+					</tr>
+					<tr>
+						<td>Step (Quantity)</td>
+						<td> <input type="text" th:field="*{step}" value=""/></td>
+						<td th:if="${#fields.hasErrors('step')}" th:errors="*{step}">Step (Quantity) Error</td>
+					</tr>
+					<tr>
+						<td>Default Quantity</td>
+						<td> <input type="text" th:field="*{defaultValue}" value=""/></td>
+						<td th:if="${#fields.hasErrors('defaultValue')}" th:errors="*{defaultValue}">Default Quantity Error</td>
+					</tr>
+					
+				</table>
+				<input type="hidden" th:field="*{id}" value=""/>
+
+		</form>  
+		
 	    <table>
 	    	<tr>
-	    		<td align=right>Order No:</td>
-	    		<td><b><label th:text="${order.id}"></label></b></td>
+		    		<td><button id="btnStart" class="btn btn-primary btn-lg btn-block" type="button" onClick="processItem('update')">Update</button></td>
+		    		<!-- 
+		    		<td><button id="btnDelete" class="btn btn-primary btn-lg btn-block" type="button" onClick="deleteItem('delete')">Delete</button></td>
+		    		 -->
 	    	</tr>
-	    	<tr>
-	    		<td align=right>Customer:</td>
-	    		<td><b><label th:text="${customer.id}+ '   '+ ${customer.name} +' ('+${customer.phone}+')'"></label></b></td>
-	    	</tr>
-	    	<tr>
-	    		<td align=right>Status:</td>
-	    		<td><b><label th:text="${order.status}"></label></b></td>
-	    	</tr>
-	    	<tr>
-	    		<td align=right valign=top>Total Price</td>
-	    		<td><b><label th:text="'Rs. '+ ${order.totalPrice}"></b></td>
-	    	</tr>
-	    	<tr>
-	    		<td align=right valign=top>Instruction (for seller)</td>
-	    		<td><label th:text="${order.instruction}"></td>
-	    	</tr>	
 	    </table>
-	    
-	    <div th:switch="${order.items}">
-		<h2 th:case="${#lists.isEmpty(order.items)}">No items in this Order</h2>
-		<div th:case="*">
-			<table border=1>
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Description</th>
-						<th>Price / Unit</th>
-						<th>Quantity</th>
-						<th>Status</th>
-						<th>Remarks</th>
-						
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="item : ${order.items}">
-					    <td th:text="${item.name}"></td>
-						<td th:text="${item.description}"></td>
-						<td th:text="'Rs. ' + ${item.price} +' per ' + ${item.unit}"></td>
-						<td th:text="${item.quantity}"></td>
-						<td th:text="${item.status}"></td>
-						<td th:text="${item.instruction}"></td>
-						
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		</div>
-		
-		<div>
-			<form id="orderForm" name="orderForm" method="post" action="#" th:action="@{/processorder}" th:object="${order}" >	
-				<br/>
-				Seller Remarks: <input id="remarks" name="remarks" th:field="*{remarks}"  type="text" value="" placeholder="Enter your remarks"></td>
-				<br/>
-				<input type="hidden" id="id"  name="id" th:field="*{id}" value=""/>
-				<input type="hidden" id="status"  name="status" th:field="*{status}" value=""/>
-			 </form>   
-			<table>
-		    	<tr>
-			    		<td><button id="btnStart" class="btn btn-primary btn-lg btn-block" type="button" onClick="processOrder('Processing')">Accept</button></td>
-			    		<td><button id="btnComplete" class="btn btn-primary btn-lg btn-block" type="button" onClick="processOrder('Completed')">Complete</button></td>
-			    		<td><button id="btnPaid" class="btn btn-primary btn-lg btn-block" type="button" onClick="processOrder('Paid')">Paid</button></td>
-			    		<td><button id="btnCancel" class="btn btn-primary btn-lg btn-block" type="button" onClick="processOrder('Cancelled')">Cancel</button></td>	
-		    	</tr>
-		    </table>	
-			
-			
-		</div>
-					
-    </div>
-    
-    
-    
+	   </div>
+	  </div>	
+				
+    </div>    
   </main>
   <!--Main layout-->
 
@@ -192,10 +185,13 @@
  
 <script>
 
-function processOrder(status){
-	document.orderForm.status.value = status; 
-	//alert(document.orderForm.status.value+'  '+document.orderForm.id.value);
-	document.orderForm.submit();
+function processItem(action){
+	document.itemForm.submit();
+}
+
+function deleteItem(action){
+	document.itemForm.action = "/item/delete"; 
+	document.itemForm.submit();
 }
 
 </script>

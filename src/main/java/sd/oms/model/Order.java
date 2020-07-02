@@ -37,6 +37,7 @@ public class Order implements Serializable {
 	private String status;
 	private String remarks;
 	private Double totalPrice;
+	private String customerName;
 	
 	private Long customerId;
 	private Long sellerId;
@@ -48,7 +49,7 @@ public class Order implements Serializable {
 		this.created = new Date();
 	}	
 	
-	public Order(Long id, String instruction, String status, String remarks, Long customerId, Long sellerId, Double totalPrice) {
+	public Order(Long id, String instruction, String status, String remarks, Long customerId, Long sellerId, Double totalPrice, String customerName) {
 		super();
 		this.id = id;
 		this.created = new Date();
@@ -58,6 +59,7 @@ public class Order implements Serializable {
 		this.customerId=customerId;
 		this.sellerId=sellerId;
 		this.totalPrice = totalPrice;
+		this.customerName = customerName;
 	}
 
 	public Long getId() {
@@ -133,5 +135,11 @@ public class Order implements Serializable {
 		this.totalPrice = totalPrice;
 	}
 	
-	
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
 }

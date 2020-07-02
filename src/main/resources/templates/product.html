@@ -157,7 +157,13 @@
 		navigation.pop();
 		displayCategory(toDisplay);
 	}
-   }		
+   }
+   
+   function editItem(itemId){
+		//alert(itemId);
+		document.itemForm.itemId.value=itemId;
+		document.itemForm.submit();
+	}
    	
    function displayCategory(id) {
 	navigation.push(id);	
@@ -172,46 +178,20 @@
 	//bkBtn.appendTo('#contentPanel');
 	
 	if(node.data.edgeCategory){
-		/*
-		html = displayItem(node.data.name, node.children);
-		alert(html);
-		var myPanel = $(html);
-       	myPanel.appendTo('#contentPanel');
-       	*/
-	    //Display Items
-	    
-	    //alert('Edge Category: '+node.data.name+ ' has children = '+node.children.length);
 	    
 	    for(var k = 0; k < node.children.length; k++){
 			item = node.children[k];
 			//alert(cat.id+ '  '+cat.data.name); 
-			
-			var params = item.id + ',' + '\''+ item.data.code + '\',' + '\''+ item.data.name + '\',' ;
-	      	params += '\''+ item.data.description + '\',' + item.data.price + ',' + '\''+ item.data.unit + '\',' ;
-	      	params += '\''+ item.data.code + '-qty\'';
 			
 			//Display items in he sub-categories	
 			<!--Grid column-->
 			var myCol = $('<div class="col-md-4 mb-4">'); 
 	        var html = ' <div class="p-4" align=left>';
 	        html += '      <p class="lead font-weight-bold">'+item.data.name+'</p>';
-	        html += '      <p>Rs. '+item.data.price+' per '+item.data.unit+'</p>';
+	        html += '      <p>Item Code: '+ item.data.code +' ; Rs. '+item.data.price+' per '+item.data.unit+'</p>';
 	        html += '      <p>'+item.data.description+'</p>';
-	        html += '        <input name="'+item.data.code+'-qty" type="number" value="'+item.data.defaultValue+'" min="'+item.data.min+'" max="'+item.data.max+'" step="'+item.data.step+'" aria-label="Search" class="form-control" style="width: 100px">';
-	        
-	        var disabled = "";
-	        var addBtnCaption = "Add to cart";
-	        if(!isItemInCart(item.data.code)){
-	      		disabled = "disabled";	
-	      	}else{
-	      		addBtnCaption = "Update cart";
-	      	}
-	        
-	        html += '<button id="btnAddToCart-'+item.data.code+'" class="btn btn-primary btn-md my-0 p" type="button" onClick="addItemToCart('+params+')">'+addBtnCaption+'</button>';
-	        
-      		html += '<button id="btnRemoveFromCart-'+item.data.code+'" '+disabled+' class="btn btn-primary btn-md my-0 p" type="button" onClick="removeItemFromCart('+params+')">Remove</button>';
-	        
-	        html += '        </button>';
+	        	        
+	        html += '<button id="btnEditItem-'+item.id+'" class="btn btn-primary btn-md my-0 p" type="button" onClick="editItem(\''+item.id+'\')">Edit</button>';
 	        html += '    </div>';
         	<!--Grid column-->
 			
@@ -221,6 +201,16 @@
 	       	
 	       	//alert('Added item');
 	   }
+	    
+	    var formHtml = "";
+	    formHtml += '    <form name="itemForm" method="post"  action="/item">';
+	    formHtml += '    	<input type="hidden" name="itemId" id="itemId" value="">';
+	    formHtml += '    </form>';
+	    
+	    var myPanel = $(formHtml);
+       	myPanel.appendTo(myCol);
+       	myCol.appendTo('#contentPanel');
+        
 	}else{
 
 	     //Display sub-categories	

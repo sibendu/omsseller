@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+//import javax.validation.constraints.*;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @javax.persistence.TableGenerator(
@@ -29,13 +31,29 @@ public class SKUItem implements Serializable {
 	private Long id;
 	
 	private String code;
+	
+	//@NotNull
 	private String name;
+	
+	//@NotNull
 	private String description;
+	
+	//@NotNull
 	private Double price;
+	
+	//@NotNull
 	private String unit;
+	
+	//@NotNull
 	private Double min;
+	
+	//@NotNull
 	private Double max;
+	
+	//@NotNull
 	private Double step;
+	
+	//@NotNull
 	private Double defaultValue;
 
 	@JsonIgnore
