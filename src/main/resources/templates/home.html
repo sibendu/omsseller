@@ -97,6 +97,8 @@
 <div class="container-fluid wow fadeIn">
 
 	<br/><br/><br/>
+	
+	<h4><p th:text="'Hello, ' + ${session.customer?.name} + '!'" /></h4>
 
 	<h4><p th:text="${message}"/></h4>
 
