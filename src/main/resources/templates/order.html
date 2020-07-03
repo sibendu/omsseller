@@ -70,7 +70,7 @@
           </li>
 	  	 <li class="nav-item">
             <a class="nav-link waves-effect" href="/cart">
-              <span class="badge red z-depth-1 mr-1"> . </span>
+              <span class="badge red z-depth-1 mr-1" id="cartItemsNo" name="cartItemsNo"> - </span>
               <i class="fas fa-shopping-cart"></i>
               <span class="clearfix d-none d-sm-inline-block"> Cart </span>
             </a>
@@ -144,8 +144,11 @@
 <script>
 
    //Check if the products tree is populated 	
-   console.log(tree);
-
+   //console.log(tree);
+	
+   //Update cart item count
+   updateCartItemCount();
+   
    var navigation = [];		
 
    displayCategory(0);	

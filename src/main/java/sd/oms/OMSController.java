@@ -339,40 +339,54 @@ public class OMSController {
 		System.out.println(
 				"processCustomer :: customer_id = " + customer.getId() + "  " + model.getAttribute("operation"));
 
-		if (customer.getId() == null) { // Adding a new customer
+		try {
+			if (customer.getId() == null) { // Adding a new customer
 
-			Customer me = (Customer) httpSession.getAttribute("customer");
+				Customer me = (Customer) httpSession.getAttribute("customer");
 
-			customer.setSeller(me.getId());
-			customer.setCreated(new Date());
-			customer.setType(OMSUtil.USER_TYPE_CUSTOMER);
+				customer.setSeller(me.getId());
+				customer.setCreated(new Date());
+				customer.setType(OMSUtil.USER_TYPE_CUSTOMER);
 
-			customerRepository.save(customer);
+				customerRepository.save(customer);
 
-			model.addAttribute("customer", customer);
+				model.addAttribute("customer", customer);
 
-			model.addAttribute("message", "New customer record created successfuly.");
+				model.addAttribute("message", "New customer record created successfuly.");
 
-		} else {
-
-			Optional<Customer> thisCust = customerRepository.findById(customer.getId());
-			if (thisCust.isPresent()) {
-				System.out.println("Customer retrieved");
-				Customer thisCustomer = thisCust.get();
-
-				thisCustomer.setName(customer.getName());
-				thisCustomer.setPassword(customer.getPassword());
-				thisCustomer.setPhone(customer.getPhone());
-				thisCustomer.setEmail(customer.getEmail());
-				thisCustomer.setAddress(customer.getAddress());
-
-				customerRepository.save(thisCustomer);
-
-				model.addAttribute("customer", thisCustomer);
-				model.addAttribute("message", "Customer record updated successfuly.");
 			} else {
-				model.addAttribute("message", "No customer record found with id# " + customer.getId() + " !!");
+
+				Optional<Customer> thisCust = customerRepository.findById(customer.getId());
+				if (thisCust.isPresent()) {
+					System.out.println("Customer retrieved");
+					Customer thisCustomer = thisCust.get();
+
+					thisCustomer.setName(customer.getName());
+					thisCustomer.setPassword(customer.getPassword());
+					thisCustomer.setPhone(customer.getPhone());
+					thisCustomer.setEmail(customer.getEmail());
+					thisCustomer.setAddress(customer.getAddress());
+
+					customerRepository.save(thisCustomer);
+
+					model.addAttribute("customer", thisCustomer);
+					model.addAttribute("message", "Customer record updated successfuly.");
+				} else {
+					model.addAttribute("message", "No customer record found with id# " + customer.getId() + " !!");
+				}
 			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			System.out.println(e);
+			if(e instanceof org.springframework.dao.DataIntegrityViolationException){
+				model.addAttribute("message", "Phone number already in use. Please use a different number.");	
+			}else {
+				model.addAttribute("message", "Error in processing customer. Please contact admin. Error message: " + e.getMessage());
+			}
+			
+			customer.setId(null);
+			model.addAttribute("customer", customer);
 		}
 
 		return "customerdetails";

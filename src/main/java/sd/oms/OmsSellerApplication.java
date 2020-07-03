@@ -5,10 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-public class OmsuiApplication {
+public class OmsSellerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(OmsuiApplication.class, args);
+		SpringApplication.run(OmsSellerApplication.class, args);
 	}
 
 }
