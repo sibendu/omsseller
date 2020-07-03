@@ -68,6 +68,7 @@ public class CatalogService {
 			//nest all categories under this
 			for (ProductCategory cat : categories) {
 				if(cat.getParentId() != null && cat.getParentId().longValue() == id) {
+					//System.out.println(id + " has child "+ cat.getParentId());
 					productCategory.addCategory(cat);
 				}
 			}
@@ -81,6 +82,19 @@ public class CatalogService {
 			throw new Exception("Root not found");
 		}
 		
+		return root;
+	}
+	
+	public ProductCategory findRootCategory(Long seller) throws Exception {
+		
+		ProductCategory root = null;	
+		Iterable<ProductCategory> categories = categoryRepository.findBySeller(seller);
+		
+		for (ProductCategory productCategory : categories) {			
+			if(productCategory.getParentId() == null ) {
+				root = productCategory; 
+			}	
+		}
 		return root;
 	}
 	

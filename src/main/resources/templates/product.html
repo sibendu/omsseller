@@ -111,9 +111,13 @@
       </nav>
       <!--/.Navbar-->
       
-      <h4><p th:text="'Hello, ' + ${session.customer?.name} + '!'" /></h4>
+      <h4><p th:text="${message}"/></h4>
       
-      <button id="btnBack" type="button" class="btn button_spcl" onClick="goBack()">Back</button><br/>	
+      <div class="row wow fadeIn" id="backButtonPanel"> 	     
+      	<button id="btnBack" type="button" class="btn button_spcl" onClick="goBack()">Back</button>	
+      </div>
+      <div class="row wow fadeIn" id="addButtonPanel"> 		
+      </div>
       
       <!--Section: Products v.3-->
       <section class="text-center mb-4">
@@ -144,8 +148,9 @@
 <script>
 
    //Check if the products tree is populated 	
-   console.log(tree);
+   //console.log(tree);
 
+   
    var navigation = [];		
 
    displayCategory(0);	
@@ -159,26 +164,49 @@
 	}
    }
    
-   function editItem(itemId){
+   function editItem(itemId, categoryId){
 		//alert(itemId);
 		document.itemForm.itemId.value=itemId;
+		document.itemForm.categoryId.value=categoryId;
+		//alert(document.itemForm.categoryId.value);
 		document.itemForm.submit();
 	}
+   
+   function addNewCategory(id){
+	   //alert('Add category under: '+id);
+	   document.categoryForm.parentId.value=id;
+	   document.categoryForm.submit();
+   }
+   
+   function deleteCategory(id){
+	   document.categoryForm.categoryId.value=id;
+	   document.categoryForm.action = "/category/delete";
+	   
+	   var result = confirm("Please confirm delete. This category will be removed wih allits children.");
+	   if (result) {
+		   document.categoryForm.submit();
+	   }
+   }
    	
    function displayCategory(id) {
+	
 	navigation.push(id);	
+	
+	//alert('here category :' +id);
 	
 	$("#contentPanel").empty();
 
 	node = searchNode(id);
 	//alert(node+'  '+node.id+'  '+node.data+'  '+node.data.name+'   '+node.data.edgeCategory);
 	
-	//var bkBtnHtml = '<button id="btnBack" type="button" class="btn button_spcl" onClick="goBack()">Back</button><br/>';
-	//var bkBtn = $(bkBtnHtml);
-	//bkBtn.appendTo('#contentPanel');
-	
 	if(node.data.edgeCategory){
 	    
+		$("#addButtonPanel").empty();
+		
+		var addBtnHtml = '<button id="btnAdd" type="button" class="btn button_spcl" onClick="editItem(null, '+node.id+')">Add Item</button>';
+		var addBtn = $(addBtnHtml);
+		addBtn.appendTo('#addButtonPanel');
+		
 	    for(var k = 0; k < node.children.length; k++){
 			item = node.children[k];
 			//alert(cat.id+ '  '+cat.data.name); 
@@ -191,7 +219,7 @@
 	        html += '      <p>Item Code: '+ item.data.code +' ; Rs. '+item.data.price+' per '+item.data.unit+'</p>';
 	        html += '      <p>'+item.data.description+'</p>';
 	        	        
-	        html += '<button id="btnEditItem-'+item.id+'" class="btn btn-primary btn-md my-0 p" type="button" onClick="editItem(\''+item.id+'\')">Edit</button>';
+	        html += '<button id="btnEditItem-'+item.id+'" class="btn btn-primary btn-md my-0 p" type="button" onClick="editItem('+item.id+','+node.id+')">Edit</button>';
 	        html += '    </div>';
         	<!--Grid column-->
 			
@@ -205,6 +233,7 @@
 	    var formHtml = "";
 	    formHtml += '    <form name="itemForm" method="post"  action="/item">';
 	    formHtml += '    	<input type="hidden" name="itemId" id="itemId" value="">';
+	    formHtml += '    	<input type="hidden" name="categoryId" id="categoryId" value="">';
 	    formHtml += '    </form>';
 	    
 	    var myPanel = $(formHtml);
@@ -212,11 +241,38 @@
        	myCol.appendTo('#contentPanel');
         
 	}else{
-
+		
+		// This is not identified as an edge node (for having Items)
+		// There are two things possible. 
+		// If this category node does not have any children items; then it might be intended to have sub-categories
+		
+		$("#addButtonPanel").empty();
+		var addBtnHtml = '<div class="col-md-4 mb-4">';
+		addBtnHtml += '			<button id="btnAdd" type="button" class="btn button_spcl" onClick="addNewCategory('+node.id+')">Add New Category</button>';
+		
+		if(node.children.length == 0){
+			// 'Add Item' button should also be displayed
+			addBtnHtml += '  <form name="itemForm" method="post"  action="/item">';
+			addBtnHtml += '		<button id="btnAdd" type="button" class="btn button_spcl" onClick="editItem(null, '+node.id+')">Add Item</button>';
+			addBtnHtml += '    	<input type="hidden" name="itemId" id="itemId" value="">';
+			addBtnHtml += '    	<input type="hidden" name="categoryId" id="categoryId" value="'+node.id+'">';
+			addBtnHtml += '  </form>';
+		}
+		
+		addBtnHtml += '		 <form name="categoryForm" method="post"  action="/category">';
+		addBtnHtml += '			<input type="hidden" id="parentId" name="parentId" value=""/>';
+		addBtnHtml += '			<input type="hidden" id="categoryId" name="categoryId" value=""/>';
+		addBtnHtml += '		 </form>	';
+		addBtnHtml += '	  </div>';
+		
+		var addBtn = $(addBtnHtml);
+		addBtn.appendTo('#addButtonPanel');
+		
 	     //Display sub-categories	
 	    for(var k = 0; k < node.children.length; k++){
-		cat = node.children[k];
-		//alert(cat.id+ '  '+cat.data); 
+			
+	    	cat = node.children[k];
+			//alert(cat.id+ '  '+cat.data); 
 
 			var myCol = $('<div class="col-lg-3 col-md-6 mb-4"></div>');
 			
@@ -225,6 +281,9 @@
 			html += '  <div class="card-body text-center">';
 			html += '    <h5><strong><a href="javascript:displayCategory('+cat.id+');" class="dark-grey-text">'+cat.data.name+'</a></strong></h5>';
 			html += '    <a href="javascript:displayCategory('+cat.id+');" class="grey-text"><h5>'+cat.data.name+'</h5></a>';
+			
+			html += '<button id="btnDeleteCategory-'+cat.id+'" class="btn btn-primary btn-md my-0 p" type="button" onClick="deleteCategory('+cat.id+')">Delete</button>';
+	        
 			html += '  </div>';
 			html += '</div>';
 

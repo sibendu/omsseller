@@ -29,9 +29,7 @@ import com.google.gson.GsonBuilder;
 
 import sd.oms.dataobject.*;
 import sd.oms.model.*;
-import sd.oms.service.CatalogService;
-import sd.oms.service.CustomerService;
-import sd.oms.service.OrderService;
+import sd.oms.service.*;
 import sd.oms.util.OMSUtil;
 
 @Controller
@@ -51,6 +49,9 @@ public class OMSController {
 
 	@Autowired
 	private CatalogService catalogService;
+	
+	@Autowired
+	CategoryRepository categoryRepository;
 
 	@PostMapping("/login")
 	public String login(@RequestParam(name = "phone", required = true) String phone, Model model,
@@ -78,19 +79,6 @@ public class OMSController {
 				model.addAttribute("message",
 						"You are not authorized to access this applicaiton. Please contact Admin.");
 				return "error";
-			}
-
-			try {
-				ProductCategory root = catalogService.findCatalog(cust.getId()); // getJson(); Test.getDummyCatalog();
-
-				String productsJson = root.toJSON();
-
-				httpSession.setAttribute("products", productsJson);
-
-				System.out.println("Catalog saved in session: " + productsJson);
-
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 
 			try {
@@ -391,29 +379,169 @@ public class OMSController {
 	}
 
 	@PostMapping("/item")
-	public String viewItem(@RequestParam(name = "itemId", required = true) Long itemId,  Model model,
+	public String viewItem(@RequestParam(name = "itemId", required = false) Long itemId, @RequestParam(name = "categoryId", required = false) Long categoryId,  Model model,
 			HttpSession httpSession) {
 		
-		System.out.println("viewItem :: item_id = " + itemId);
+		System.out.println("viewItem :: itemId = " + itemId + " & categoryId = "+categoryId);
 		
-		if(itemId != null || itemId.longValue() != 0) {
-			SKUItem item = catalogService.findItem(itemId);
+		SKUItem item = null;
+		
+		if(itemId == null) {
+			item = new SKUItem();
+			Optional<ProductCategory> category = categoryRepository.findById(categoryId);
+			item.setCategory(category.get());
+		}else if(itemId != null || itemId.longValue() != 0) { //Existing item being updated
+			item = catalogService.findItem(itemId);
 			catalogService.saveItem(item);
-			model.addAttribute("item", item);
 		}else {
-			model.addAttribute("message", "Please contact your admin for adding items.");
+			model.addAttribute("message", "Please contact your admin for this operation.");
 		}
+		
+		model.addAttribute("item", item);
+		
 		return "item";
 	}
+	
+	@PostMapping("/category")
+	public String addCategory(
+			@RequestParam(name = "parentId", required = true) Long parentId, 
+			//@RequestParam(name = "categoryId", required = false) Long categoryId, 
+			//@RequestParam(name = "categoryName", required = false) String categoryName, 
+			//@RequestParam(name = "categoryDescription", required = false) String categoryDescription, 
+			Model model,
+			HttpSession httpSession) {
+		
+		System.out.println(" saveCategory :: parentId = "+parentId);
+		
+		Customer seller = (Customer)httpSession.getAttribute("customer");
+		
+		Optional<ProductCategory> parent = categoryRepository.findById(parentId);
+		
+		ProductCategory category = new ProductCategory(null, seller.getId(), null, null, parentId, null);
+		
+		model.addAttribute("category", category);
+
+		return "category"; 
+	}
+	
+	@PostMapping("/category/save")
+	public String saveCategory(@ModelAttribute ProductCategory formCategory, 
+			Model model,
+			HttpSession httpSession) {
+		
+		Long catId = formCategory.getId();
+		Long parentId = formCategory.getParentId();
+		System.out.println("saveCategory :: catId = " + catId + "; parent_id = "+parentId);		
+		
+		
+		try {
+			if(parentId != null && parentId.longValue() == 0 ) { // This is under root category			
+				Customer seller = (Customer)httpSession.getAttribute("customer");
+				ProductCategory root = catalogService.findRootCategory(seller.getId()); 
+				formCategory.setParentId(root.getId());
+			}	
+				
+			if(catId == null) { // New category
+				
+				categoryRepository.save(formCategory);
+				model.addAttribute("category", formCategory);
+				
+				//Update product catalog saved in session
+				try {
+					refreshProductCatalog(httpSession);
+					model.addAttribute("message", "Category added successfully.");
+				} catch (Exception e) {
+					model.addAttribute("Category added successfully, but product catalog could not be updated. Please log in again.");
+				}
+				
+			}else if(catId.longValue() != 0 ) { //Exiting category to be updated
+				
+				Optional<ProductCategory> thisCategory = categoryRepository.findById(catId);
+				ProductCategory category = thisCategory.get();
+				category.setName(formCategory.getName());
+				category.setSeller(formCategory.getSeller());
+				category.setDescription(formCategory.getDescription());
+				category.setParentId(formCategory.getParentId());
+				
+				categoryRepository.save(category);
+				
+				model.addAttribute("category", category);
+				
+				//Update product catalog saved in session
+				try {
+					refreshProductCatalog(httpSession);
+					model.addAttribute("message", "Category updated successfully.");
+				} catch (Exception e) {
+					model.addAttribute("Category updated successfully, but product catalog could not be updated. Please log in again.");
+				}		
+
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			model.addAttribute("message", "Error in processing.   Please contact admin.");
+		}
+		return "category"; 
+	}
+	
+	@PostMapping("/category/delete")
+	public String deleteCategory(@RequestParam(name = "categoryId", required = true) Long categoryId, 
+			Model model,
+			HttpSession httpSession) {
+
+		System.out.println("deleteCategory :: categoryId = " + categoryId);		
+		
+		//Optional<ProductCategory> thisCategory = categoryRepository.findById(catId);
+		//ProductCategory category = thisCategory.get();
+
+		categoryRepository.deleteById(categoryId);
+			
+		//Update product catalog saved in session
+		try {
+			refreshProductCatalog(httpSession);
+			model.addAttribute("message", "Category deleted successfully.");
+		} catch (Exception e) {
+			model.addAttribute("Category deleted successfully, but product catalog could not be updated. Please log in again.");
+		}		
+		
+		return showProducts(model,  httpSession);
+	}
+	/*
+	@PostMapping("/category/delete")
+	public String deleteCategory(@ModelAttribute ProductCategory formCategory, 
+			Model model,
+			HttpSession httpSession) {
+		
+		Long catId = formCategory.getId();
+		Long parentId = formCategory.getParentId();
+		System.out.println("deleteCategory :: catId = " + catId + "; parent_id = "+parentId);		
+		
+		Optional<ProductCategory> thisCategory = categoryRepository.findById(catId);
+		ProductCategory category = thisCategory.get();
+
+		categoryRepository.delete(category);
+			
+		//Update product catalog saved in session
+		try {
+			refreshProductCatalog(httpSession);
+			model.addAttribute("message", "Category deleted successfully.");
+		} catch (Exception e) {
+			model.addAttribute("Category deleted successfully, but product catalog could not be updated. Please log in again.");
+		}		
+		
+		return showProducts(model,  httpSession);
+	}*/
+
 	
 	@PostMapping("/item/save")
 	public String saveItem(@ModelAttribute SKUItem formItem, Model model,
 			HttpSession httpSession) {
 		
 		Long itemId = formItem.getId();
-		System.out.println("saveItem :: item_id = " + itemId);
+		System.out.println("saveItem :: item_id = " + itemId + "; category_id = "+formItem.getCategory().getId());
 		
-		if(itemId != null || itemId.longValue() != 0) {
+		if(itemId != null && itemId.longValue() != 0) {
+			
 			SKUItem item = catalogService.findItem(itemId);
 			
 			item.setName(formItem.getName());
@@ -431,20 +559,24 @@ public class OMSController {
 			
 			//Update product catalog saved in session
 			try {
-				Customer cust = (Customer)httpSession.getAttribute("customer");
-				ProductCategory root = catalogService.findCatalog(cust.getId());
-				String productsJson = root.toJSON();
-				httpSession.setAttribute("products", productsJson);
-				System.out.println("Catalog updated in session");
-				
+				refreshProductCatalog(httpSession);
 				model.addAttribute("message", "Item updated successfully.");
-				
 			} catch (Exception e) {
 				model.addAttribute("Item updated successfully, but product catalog could not be updated. Please log in again.");
-			}				
-			
+			}							
 		}else {
-			model.addAttribute("message", "Please contact your admin for adding items.");
+			//New item being added
+			
+			catalogService.saveItem(formItem);			
+			model.addAttribute("item", formItem);
+			
+			//Update product catalog saved in session
+			try {
+				refreshProductCatalog(httpSession);
+				model.addAttribute("message", "Item added successfully.");
+			} catch (Exception e) {
+				model.addAttribute("Item added successfully, but product catalog could not be updated. Please log in again.");
+			}						
 		}
 		return "item";
 	}
@@ -459,23 +591,25 @@ public class OMSController {
 		catalogService.removeItem(skuItem.getId());
 		System.out.println("Item deleted. id = "+skuItem.getId());
 
-		model.addAttribute("item", new SKUItem());
+		//model.addAttribute("item", new SKUItem());
 		
 		//Update product catalog saved in session
 		try {
-			Customer cust = (Customer)httpSession.getAttribute("customer");
-			ProductCategory root = catalogService.findCatalog(cust.getId());
-			String productsJson = root.toJSON();
-			httpSession.setAttribute("products", productsJson);
-			System.out.println("Catalog updated in session");
-			
+			refreshProductCatalog(httpSession);
 			model.addAttribute("message", "Item removed successfully.");
-			
 		} catch (Exception e) {
 			model.addAttribute("Item removed successfully, but product catalog could not be updated. Please log in again.");
 		}	
 	
-		return "item";
+		return showProducts(model, httpSession); 
+	}
+	
+	public void refreshProductCatalog(HttpSession httpSession) throws Exception {
+		Customer cust = (Customer)httpSession.getAttribute("customer");
+		ProductCategory root = catalogService.findCatalog(cust.getId());
+		String productsJson = root.toJSON();
+		httpSession.setAttribute("products", productsJson);
+		System.out.println("Catalog updated in session");
 	}
 
 	/*

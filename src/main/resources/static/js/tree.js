@@ -134,6 +134,7 @@ var tree = new Tree({"name":"products"});
 products.forEach(display);
 
 function display(value, index, array){
+	//alert(' handleCategory 0 '+ value);
 	handleCategory(value, 0);
 }
 
@@ -149,10 +150,19 @@ function handleCategory(cat, parentId){
 			handleCategory(subcat, cat.id);
 		}
 	}else if(cat.items){
-		searchNode(parentId).children.push(new Node(cat.id, {"name":cat.name, "edgeCategory":true}));
-		for(var p = 0 ; p < cat.items.length; p++){
-			item = cat.items[p];
-			searchNode(cat.id).children.push(new Node(item.id, {"code":item.code,"name":item.name , "description":item.description, "price":item.price, "unit":item.unit,"min":item.min,"max":item.max,"step":item.step,"defaultValue":item.defaultValue})); 
-		}			
+		
+		if(cat.items.length > 0){
+			//This is an edgeCategory, having Items beneath it
+			
+			searchNode(parentId).children.push(new Node(cat.id, {"name":cat.name, "edgeCategory":true}));
+			for(var p = 0 ; p < cat.items.length; p++){
+				item = cat.items[p];
+				searchNode(cat.id).children.push(new Node(item.id, {"code":item.code,"name":item.name , "description":item.description, "price":item.price, "unit":item.unit,"min":item.min,"max":item.max,"step":item.step,"defaultValue":item.defaultValue})); 
+			}
+		
+		}else{
+			//This is a Category, having no children beneath it yet; it can have sub-categories or items; not known yet
+			searchNode(parentId).children.push(new Node(cat.id, {"name":cat.name, "edgeCategory":false}));
+		}
 	}	
 }

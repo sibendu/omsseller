@@ -105,11 +105,11 @@
         <!--Grid column-->
         <div class="col-md-8 mb-4">
          
-		<form id="itemForm" name="itemForm" method="post" action="#" th:action="@{/item/save}" th:object="${item}" >	
+		<form id="itemForm" name="categoryForm" method="post" action="#" th:action="@{/category/save}" th:object="${category}" >	
 				<br/>
 				<table>
 					<tr>
-						<td>Item Id</td>
+						<td>Category Id</td>
 						<td><b><p th:text="*{id}"/></b> </td>
 					</tr>
 					<tr>
@@ -122,48 +122,17 @@
 						<td> <input type="text" th:field="*{description}" value=""/></td>
 						<td th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Description Error</td>
 					</tr>
-					<tr>
-						<td>Price (per unit)</td>
-						<td> <input type="text" th:field="*{price}" value=""/></td>
-						<td th:if="${#fields.hasErrors('price')}" th:errors="*{price}">Price (per unit) Error</td>
-					</tr>
-					<tr>
-						<td>Unit</td>
-						<td> <input type="text" th:field="*{unit}" value=""/></td>
-						<td th:if="${#fields.hasErrors('unit')}" th:errors="*{unit}">Unit Error</td>
-					</tr>
-					<tr>
-						<td>Minimum Quantity</td>
-						<td> <input type="text" th:field="*{min}" value=""/></td>
-						<td th:if="${#fields.hasErrors('min')}" th:errors="*{min}">Minimum Quantity Error</td>
-					</tr>
-					<tr>
-						<td>Maximum Quantity</td>
-						<td> <input type="text" th:field="*{max}" value=""/></td>
-						<td th:if="${#fields.hasErrors('max')}" th:errors="*{max}">Maximum Quantity Error</td>
-					</tr>
-					<tr>
-						<td>Step (Quantity)</td>
-						<td> <input type="text" th:field="*{step}" value=""/></td>
-						<td th:if="${#fields.hasErrors('step')}" th:errors="*{step}">Step (Quantity) Error</td>
-					</tr>
-					<tr>
-						<td>Default Quantity</td>
-						<td> <input type="text" th:field="*{defaultValue}" value=""/></td>
-						<td th:if="${#fields.hasErrors('defaultValue')}" th:errors="*{defaultValue}">Default Quantity Error</td>
-					</tr>
-					
 				</table>
 				<input type="hidden" th:field="*{id}" value=""/>
-				<input type="hidden" th:field="*{category.id}" value=""/>
+				<input type="hidden" th:field="*{seller}" value=""/>
+				<input type="hidden" th:field="*{parentId}" value=""/>
 
 		</form>  
 		
 	    <table>
 	    	<tr>
-		    		<td><button id="btnStart" class="btn btn-primary btn-lg btn-block" type="button" onClick="processItem()">Update</button></td>		 
-		 	  		<td><button id="btnDelete" class="btn btn-primary btn-lg btn-block" type="button" onClick="deleteItem()">Delete</button></td>
-		  
+		    		<td><button id="btnStart" class="btn btn-primary btn-lg btn-block" type="button" onClick="processItem()">Add/ Update</button></td>		 
+		 	  	<!--  <td><button id="btnDelete" class="btn btn-primary btn-lg btn-block" type="button" onClick="deleteItem()">Delete</button></td> -->
 	    	</tr>
 	    </table>
 	   </div>
@@ -186,13 +155,14 @@
 <script>
 
 function processItem(){
-	document.itemForm.submit();
+	document.categoryForm.submit();
 }
 
+/*
 function deleteItem(){
-	document.itemForm.action = "/item/delete"; 
-	document.itemForm.submit();
-}
+	document.categoryForm.action = "/category/save"; 
+	document.categoryForm.submit();
+}*/
 
 </script>
 
