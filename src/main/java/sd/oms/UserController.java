@@ -33,6 +33,7 @@ import sd.oms.model.ProductCategory;
 import sd.oms.model.ProductCategoryRepository;
 import sd.oms.model.SKUItem;
 import sd.oms.service.CatalogService;
+import sd.oms.util.OMSUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -133,23 +134,40 @@ public class UserController {
 	}
 
 	@GetMapping(path = "/seed") //
-	public @ResponseBody String seedUser() throws Exception{
+	public @ResponseBody String seedUser() throws Exception {
 		customerRepository.deleteAll();
-		
-		Customer seller1 = addCustomer("Mana", "1111", "s", null, null, null, null);
-		Customer seller2 = addCustomer("Bappa", "2222", "s", null, null, null, null);
 
-		Customer cust1 = addCustomer("Arghya", "3333", null, seller1.getId(), null, null, null);
-		Customer cust2 = addCustomer("Mehul", "4444", null,  seller2.getId(), null, null, null); // mapped to seller Bappa
-		Customer cust3 = addCustomer("Dipa", "5555", null,  seller2.getId() , null, null, null); // mapped to absent seller
+		//String name,String phone,String type,Long seller, String password,String email,String address
 		
-		//Seed catalog data
-		seedCatalog(seller2.getId());
-		
+		Customer seller1 = addCustomer("Mana", "1111", OMSUtil.USER_TYPE_SELLER , null, null, null, null);
+		Customer seller2 = addCustomer("Sibendu Das", "2222", OMSUtil.USER_TYPE_SELLER, null, null, null, null);
+
+		Customer cust1 = addCustomer("Arghya Dutta", "3333", OMSUtil.USER_TYPE_CUSTOMER, seller2.getId(), "password", "arghyadutta.19@gmail.com" , "Gournagar, Thakurpukur, Kolkata - 63");
+		Customer cust2 = addCustomer("Mehul Das", "4444", OMSUtil.USER_TYPE_CUSTOMER, seller2.getId(), "password", "sibendu.das@gmail.com", "Gournagar, Thakurpukur, Kolkata - 63"); // mapped to seller
+																								// Bappa
+		Customer cust3 = addCustomer("Dipanjana Naha", "5555", OMSUtil.USER_TYPE_CUSTOMER, seller2.getId(), "password", "dipanjanan@gmail.com", "Sakherbazar, Kolkata - 61"); // mapped to absent
+																								// seller
+		Customer cust4 = addCustomer("Nilanjan Das", "6666", OMSUtil.USER_TYPE_CUSTOMER, seller2.getId(), "password", "nilanjan.31@gmail.com", "Tollygunge, Kolkata"); // mapped to absent
+		// seller
+		Customer cust5 = addCustomer("Nilotpal Ghosh", "7777", OMSUtil.USER_TYPE_CUSTOMER, seller2.getId(), "password", "nilotpalghosh@gmail.com", "Oxytown, Kolkata"); // mapped to absent
+		// seller
+
+		// Seed only root catalog data
+		seedRootCatalogOnly(seller1.getId());
+				
+		// Seed Dummy catalog data
+		seedDummyCatalog(seller2.getId());
+
 		return "OMS data seeded successfully";
 	}
 	
-	public void seedCatalog(Long seller) throws Exception{
+	public void seedRootCatalogOnly(Long seller) throws Exception {
+		ProductCategory rootCatalog = new ProductCategory(null, seller, "Root Catalog", "Root Catalog", null, null);
+		catalogService.save(rootCatalog);
+		System.out.println("Seeded root catalog: " + rootCatalog.getId()+" for seller user: "+seller);
+	}
+
+	public void seedDummyCatalog(Long seller) throws Exception {
 
 		ProductCategory cat = null;
 		SKUItem item = null;
