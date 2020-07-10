@@ -28,7 +28,11 @@
 	
 	var clearPage = /*[[${clearCart}]]*/ ''; 
 	//alert(productjson + '  ::: '+productjson );
-	 
+		
+	var IMAGE_URL = /*[[${session.IMAGE_URL}]]*/ '';
+	
+	var IMAGE_URL_SUFFIX = /*[[${session.IMAGE_URL_SUFFIX}]]*/ '';
+	
 /*]]>*/
 </script>
 
@@ -168,20 +172,8 @@
 	node = searchNode(id);
 	//alert(node+'  '+node.id+'  '+node.data+'  '+node.data.name+'   '+node.data.edgeCategory);
 	
-	//var bkBtnHtml = '<button id="btnBack" type="button" class="btn button_spcl" onClick="goBack()">Back</button><br/>';
-	//var bkBtn = $(bkBtnHtml);
-	//bkBtn.appendTo('#contentPanel');
-	
 	if(node.data.edgeCategory){
-		/*
-		html = displayItem(node.data.name, node.children);
-		alert(html);
-		var myPanel = $(html);
-       	myPanel.appendTo('#contentPanel');
-       	*/
 	    //Display Items
-	    
-	    //alert('Edge Category: '+node.data.name+ ' has children = '+node.children.length);
 	    
 	    for(var k = 0; k < node.children.length; k++){
 			item = node.children[k];
@@ -195,10 +187,27 @@
 			<!--Grid column-->
 			var myCol = $('<div class="col-md-4 mb-4">'); 
 	        var html = ' <div class="p-4" align=left>';
+	        
+	        
+	        html += '      <table>';
+	        html += '      <tr>';
+	        html += '      		<td width=40%>';
+	        
 	        html += '      <p class="lead font-weight-bold">'+item.data.name+'</p>';
 	        html += '      <p>Rs. '+item.data.price+' per '+item.data.unit+'</p>';
 	        html += '      <p>'+item.data.description+'</p>';
 	        html += '        <input name="'+item.data.code+'-qty" type="number" value="'+item.data.defaultValue+'" min="'+item.data.min+'" max="'+item.data.max+'" step="'+item.data.step+'" aria-label="Search" class="form-control" style="width: 100px">';
+	        
+	        html += '      		</td>';
+			
+	        url = IMAGE_URL + item.id + IMAGE_URL_SUFFIX; 
+	        
+	        html += '      		<td>';
+	        html += '      			<img src="'+url+'" class="img-fluid img-thumbnail rounded"  alt="" /> ';
+	        html += '      		</td>';
+	        html += '      </tr>';
+	        html += '      </table>';
+	        
 	        
 	        var disabled = "";
 	        var addBtnCaption = "Add to cart";
@@ -235,7 +244,12 @@
 			html += '<div class="card">';
 			html += '  <div class="card-body text-center">';
 			html += '    <h5><strong><a href="javascript:displayCategory('+cat.id+');" class="dark-grey-text">'+cat.data.name+'</a></strong></h5>';
-			html += '    <a href="javascript:displayCategory('+cat.id+');" class="grey-text"><h5>'+cat.data.name+'</h5></a>';
+			html += '    <a href="javascript:displayCategory('+cat.id+');" class="grey-text"><h5>'+cat.data.description+'</h5></a>';
+			
+			url = IMAGE_URL + cat.id + IMAGE_URL_SUFFIX; 
+			//alert(url);
+	        html += '      			<img src="'+url+'" class="img-fluid img-thumbnail rounded"  alt="" />';
+			
 			html += '  </div>';
 			html += '</div>';
 

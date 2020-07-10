@@ -129,7 +129,16 @@
 					</tr>
 					<tr>
 						<td>Unit</td>
-						<td> <input type="text" th:field="*{unit}" value=""/></td>
+						<td> 
+						
+						<select th:field="*{unit}">
+						    <option th:value="'Kg'" th:text="Kg"></option>
+						    <option th:value="'Litre'" th:text="Litre"></option>
+						    <option th:value="'Pack'" th:text="Pack"></option>
+						    <option th:value="'Piece'" th:text="Piece"></option>
+						    <option th:value="'Gram'" th:text="Gram"></option>
+						    <option th:value="'Box'" th:text="Box"></option>
+						</select>
 						<td th:if="${#fields.hasErrors('unit')}" th:errors="*{unit}">Unit Error</td>
 					</tr>
 					<tr>

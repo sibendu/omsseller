@@ -144,7 +144,7 @@ function handleCategory(cat, parentId){
 
 	if(cat.subcategories){
 				
-		searchNode(parentId).children.push(new Node(cat.id, {"name":cat.name, "edgeCategory":false}));
+		searchNode(parentId).children.push(new Node(cat.id, {"name":cat.name, "description": cat.description ,"edgeCategory":false}));
 		for(var m = 0 ; m < cat.subcategories.length; m++){
 			subcat = cat.subcategories[m];
 			handleCategory(subcat, cat.id);
@@ -154,7 +154,7 @@ function handleCategory(cat, parentId){
 		if(cat.items.length > 0){
 			//This is an edgeCategory, having Items beneath it
 			
-			searchNode(parentId).children.push(new Node(cat.id, {"name":cat.name, "edgeCategory":true}));
+			searchNode(parentId).children.push(new Node(cat.id, {"name":cat.name, "description": cat.description ,"edgeCategory":true}));
 			for(var p = 0 ; p < cat.items.length; p++){
 				item = cat.items[p];
 				searchNode(cat.id).children.push(new Node(item.id, {"code":item.code,"name":item.name , "description":item.description, "price":item.price, "unit":item.unit,"min":item.min,"max":item.max,"step":item.step,"defaultValue":item.defaultValue})); 
@@ -162,7 +162,7 @@ function handleCategory(cat, parentId){
 		
 		}else{
 			//This is a Category, having no children beneath it yet; it can have sub-categories or items; not known yet
-			searchNode(parentId).children.push(new Node(cat.id, {"name":cat.name, "edgeCategory":false}));
+			searchNode(parentId).children.push(new Node(cat.id, {"name":cat.name, "description": cat.description , "edgeCategory":false}));
 		}
 	}	
 }

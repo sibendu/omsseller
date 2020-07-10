@@ -31,7 +31,10 @@
 	
 	var clearPage = /*[[${clearCart}]]*/ ''; 
 	//alert(productjson + '  ::: '+productjson );
-	 
+	
+	var IMAGE_URL = /*[[${session.IMAGE_URL}]]*/ '';
+	
+	var IMAGE_URL_SUFFIX = /*[[${session.IMAGE_URL_SUFFIX}]]*/ '';
 /*]]>*/
 </script>
 
@@ -177,6 +180,19 @@
 		document.itemForm.submit();
 	}
    
+   function editImage(id, type){
+	   //alert(id+ ' '+type);
+	   if(type == 'category'){
+		   document.categoryForm.categoryId.value= id; 
+		   document.categoryForm.action='/image';
+		   document.categoryForm.submit();
+	   }else{
+		   document.itemForm.itemId.value= id; 
+		   document.itemForm.action='/image';
+		   document.itemForm.submit();
+	   }
+   }
+   
    function addNewCategory(id){
 	   //alert('Add category under: '+id);
 	   document.categoryForm.parentId.value=id;
@@ -218,13 +234,28 @@
 			
 			//Display items in he sub-categories	
 			<!--Grid column-->
-			var myCol = $('<div class="col-md-4 mb-4">'); 
+			var myCol = $('<div class="col-md-4 mb-4"></div>'); 
+			
 	        var html = ' <div class="p-4" align=left>';
-	        html += '      <p class="lead font-weight-bold">'+item.data.name+'</p>';
-	        html += '      <p>Item Code: '+ item.data.code +' ; Rs. '+item.data.price+' per '+item.data.unit+'</p>';
-	        html += '      <p>'+item.data.description+'</p>';
-	        	        
+	        
+	        html += '      <table>';
+	        html += '      <tr>';
+	        html += '      		<td width=40%>';
+	        html += '      			<p class="lead font-weight-bold">'+item.data.name+'</p>';
+	        html += '      			<p>Code: '+ item.data.code +' ; Rs. '+item.data.price+' per '+item.data.unit+'</p>';
+	        html += '      			<p>'+item.data.description+'</p>';
+	        html += '      		</td>';
+			
+	        url = IMAGE_URL + item.id + IMAGE_URL_SUFFIX; 
+	        
+	        html += '      		<td>';
+	        html += '      			<img src="'+url+'" class="img-fluid img-thumbnail rounded"  alt="" /> ';
+	        html += '      		</td>';
+	        html += '      </tr>';
+	        html += '      </table>';
+	        
 	        html += '<button id="btnEditItem-'+item.id+'" class="btn btn-primary btn-md my-0 p" type="button" onClick="editItem('+item.id+','+node.id+')">Edit</button>';
+	        html += '<button id="btnEditImage-'+item.id+'" class="btn btn-primary btn-md my-0 p" type="button" onClick="editImage('+item.id+',\'item\')">Edit Image</button>';
 	        html += '    </div>';
         	<!--Grid column-->
 			
@@ -285,9 +316,13 @@
 			html += '<div class="card">';
 			html += '  <div class="card-body text-center">';
 			html += '    <h5><strong><a href="javascript:displayCategory('+cat.id+');" class="dark-grey-text">'+cat.data.name+'</a></strong></h5>';
-			html += '    <a href="javascript:displayCategory('+cat.id+');" class="grey-text"><h5>'+cat.data.name+'</h5></a>';
+			html += '    <a href="javascript:displayCategory('+cat.id+');" class="grey-text"><h5>'+cat.data.description+'</h5></a>';
+			
+			url = IMAGE_URL + cat.id + IMAGE_URL_SUFFIX; 
+	        html += '      			<img src="'+url+'" class="img-fluid img-thumbnail rounded"  alt="" /><br/>';
 			
 			html += '<button id="btnDeleteCategory-'+cat.id+'" class="btn btn-primary btn-md my-0 p" type="button" onClick="deleteCategory('+cat.id+')">Delete</button>';
+			html += '<button id="btnEditImage-'+cat.id+'" class="btn btn-primary btn-md my-0 p" type="button" onClick="editImage('+cat.id+',\'category\')">Edit Image</button>';
 	        
 			html += '  </div>';
 			html += '</div>';
