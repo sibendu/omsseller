@@ -101,7 +101,9 @@
 	<h4><p th:text="'Hello, ' + ${session.customer?.name} + '!'" /></h4>
 
 	<h4><p th:text="${message}"/></h4>
-
+	
+	<a class="btn btn-primary" href="/search" role="button">Search</a>   
+	
 <div th:switch="${orders}">
 		<h5 th:case="null">No orders yet.</h5>
 		<div th:case="*">

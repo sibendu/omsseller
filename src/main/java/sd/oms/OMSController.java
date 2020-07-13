@@ -108,6 +108,53 @@ public class OMSController {
 
 		return showHome(model, httpSession);
 	}
+	
+	
+	@GetMapping("/search")
+	public String showSearchForm(Model model, HttpSession httpSession) {
+		System.out.println("Going to Search");
+		
+		SearchDTO search = new SearchDTO();
+		
+		Customer cust = (Customer) httpSession.getAttribute("customer");
+		search.setSeller(cust.getId());
+		
+		List<Customer> myCustomers = customerRepository.findBySeller(cust.getId());
+		search.setCustomers(myCustomers);
+		
+		model.addAttribute("search", search);
+		
+		return "search";
+	}
+	
+	@PostMapping("/search")
+	public String showSearchResult( @ModelAttribute SearchDTO search, Model model,
+			HttpSession httpSession) {
+		
+		System.out.println("Searching orders for: "+ search.getSeller()+ " :: "+search.getCustomerId()+" :: "+search.getOrderNum());
+		
+		Customer cust = (Customer) httpSession.getAttribute("customer");
+		search.setSeller(cust.getId());		
+		List<Customer> myCustomers = customerRepository.findBySeller(cust.getId());
+		search.setCustomers(myCustomers);
+		
+		model.addAttribute("search", search);		
+	
+		ArrayList<Order> result;
+		try {
+			result = orderService. search(search.getSeller(), search.getCustomerId(), search.getOrderNum()); 
+			model.addAttribute("orders", result);
+			
+			System.out.println("Found: "+result.size());
+			if(result.size() == 0) {
+				model.addAttribute("message", "There are no results matching criteria.");
+			}
+		} catch (Exception e) {
+			model.addAttribute("message", "There is some error in search: "+e.getMessage()+" . Please contact your Admin if the error persists.");
+		}
+		
+		return "search";
+	}	
 
 	@GetMapping("/home")
 	public String showHome(Model model, HttpSession httpSession) {
@@ -487,7 +534,7 @@ public class OMSController {
 			item.setMin(new Double(1));
 			item.setMax(new Double(10));
 			item.setStep(new Double(1));
-			item.setDefaultValue(new Double(10));
+			item.setDefaultValue(new Double(1));
 			
 			Optional<ProductCategory> category = categoryRepository.findById(categoryId);
 			item.setCategory(category.get());
